@@ -37,9 +37,6 @@ uv run python manage.py end_auctions
 
 # Uruchomienie testów
 uv run python manage.py test
-
-# Generowanie dokumentacji DOCX
-uv run python scripts/generate_docx.py
 ```
 
 ## Struktura projektu
@@ -47,8 +44,6 @@ uv run python scripts/generate_docx.py
 - `accounts/` — rejestracja, logowanie, profil użytkownika
 - `auctions/` — aukcje, licytacja, kategorie, watchlist
 - `notifications/` — powiadomienia e-mail
-- `docs/` — dokumentacja projektowa (PL), diagramy UML, zrzuty ekranu
-- `docs/dokumentacja-projektu.docx` — wersja DOCX do oddania na MS Teams
 
 ## Konfiguracja e-mail (opcjonalna)
 
