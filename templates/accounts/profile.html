@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Profil — MiniAukcje{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Profil użytkownika: {{ user.username }}</h1>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Moje aukcje</div>
+            <ul class="list-group list-group-flush">
+                {% for auction in my_auctions %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'auctions:detail' auction.pk %}">{{ auction.title }}</a>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge {% if auction.status == 'active' %}text-bg-success{% else %}text-bg-secondary{% endif %}">{{ auction.get_status_display }}</span>
+                            {% if auction.bid_count == 0 %}
+                                <a href="{% url 'auctions:delete' auction.pk %}" class="btn btn-outline-danger btn-sm">Usuń</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Brak aukcji.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Lista obserwowanych</div>
+            <ul class="list-group list-group-flush">
+                {% for item in watchlist %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <a href="{% url 'auctions:detail' item.auction.pk %}">{{ item.auction.title }}</a>
+                        <span>{{ item.auction.current_price }} PLN</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Brak obserwowanych aukcji.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Moje oferty</div>
+            <ul class="list-group list-group-flush">
+                {% for bid in my_bids %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <a href="{% url 'auctions:detail' bid.auction.pk %}">{{ bid.auction.title }}</a>
+                        <span>{{ bid.amount }} PLN</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Brak ofert.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header">Wygrane aukcje</div>
+            <ul class="list-group list-group-flush">
+                {% for auction in won_auctions %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <a href="{% url 'auctions:detail' auction.pk %}">{{ auction.title }}</a>
+                        <span>{{ auction.current_price }} PLN</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Brak wygranych aukcji.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

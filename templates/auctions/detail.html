@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ auction.title }} — MiniAukcje{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            {% if auction.image %}
+                <img src="{{ auction.image.url }}" class="card-img-top" alt="{{ auction.title }}" style="max-height: 360px; object-fit: cover;">
+            {% endif %}
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge bg-secondary">{{ auction.category.name }}</span>
+                        {% if auction.status == "ended" %}
+                            <span class="badge bg-dark">Zakończona</span>
+                        {% elif auction.is_active %}
+                            <span class="badge bg-success">Aktywna</span>
+                        {% endif %}
+                    </div>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'auctions:toggle_watchlist' auction.pk %}" class="btn btn-sm {% if is_watched %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                            {% if is_watched %}Usuń z obserwowanych{% else %}Obserwuj{% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+                <h1 class="h3">{{ auction.title }}</h1>
+                <p class="text-muted">Sprzedawca: {{ auction.seller.username }}</p>
+                <p>{{ auction.description }}</p>
+                <p class="fs-4 mb-0"><strong>Aktualna cena: {{ auction.current_price }} PLN</strong></p>
+                <p class="text-muted">Cena startowa: {{ auction.starting_price }} PLN</p>
+                <p class="text-muted">Zakończenie: {{ auction.ends_at|date:"d.m.Y H:i" }}</p>
+                {% if auction.winner %}
+                    <div class="alert alert-success mt-3 mb-0">
+                        Zwycięzca: <strong>{{ auction.winner.username }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header">Historia ofert</div>
+            <ul class="list-group list-group-flush">
+                {% for bid in bids %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ bid.bidder.username }}</span>
+                        <span><strong>{{ bid.amount }} PLN</strong> — {{ bid.created_at|date:"d.m.Y H:i" }}</span>
+                    </li>
+                {% empty %}
+                    <li class="list-group-item text-muted">Brak ofert.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        {% if bid_form %}
+            <div class="card shadow-sm">
+                <div class="card-header">Złóż ofertę</div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ bid_form.amount.label_tag }}
+                            {{ bid_form.amount }}
+                            {% if bid_form.amount.errors %}
+                                <div class="text-danger small">{{ bid_form.amount.errors }}</div>
+                            {% endif %}
+                        </div>
+                        {% if bid_form.non_field_errors %}
+                            <div class="text-danger small mb-2">{{ bid_form.non_field_errors }}</div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-success w-100">Licytuj</button>
+                    </form>
+                </div>
+            </div>
+        {% elif not user.is_authenticated and auction.is_active %}
+            <div class="alert alert-info">
+                <a href="{% url 'accounts:login' %}?next={{ request.path }}">Zaloguj się</a>, aby licytować.
+            </div>
+        {% elif user.is_authenticated and auction.seller == user %}
+            <div class="card shadow-sm">
+                <div class="card-header">Twoja aukcja</div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Nie możesz licytować własnej aukcji.</p>
+                    {% if not bids %}
+                        <a href="{% url 'auctions:delete' auction.pk %}" class="btn btn-outline-danger btn-sm">Usuń aukcję</a>
+                    {% else %}
+                        <p class="text-muted small mb-0">Aukcji z ofertami nie można usunąć.</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% elif not auction.is_active %}
+            <div class="alert alert-secondary">Aukcja zakończona.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

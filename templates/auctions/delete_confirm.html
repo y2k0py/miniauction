@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Usuń aukcję — MiniAukcje{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header text-danger">Usuń aukcję</div>
+            <div class="card-body">
+                <p>Czy na pewno chcesz usunąć aukcję <strong>{{ auction.title }}</strong>?</p>
+                <p class="text-muted small mb-0">Tej operacji nie można cofnąć.</p>
+                <form method="post" class="mt-4 d-flex gap-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Tak, usuń</button>
+                    <a href="{% url 'auctions:detail' auction.pk %}" class="btn btn-outline-secondary">Anuluj</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

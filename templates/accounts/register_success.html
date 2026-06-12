@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Rejestracja zakończona — MiniAukcje{% endblock %}
+
+{% block content %}
+<div class="alert alert-success">
+    Konto <strong>{{ username }}</strong> zostało utworzone. Możesz się teraz <a href="{% url 'accounts:login' %}">zalogować</a>.
+</div>
+{% endblock %}
